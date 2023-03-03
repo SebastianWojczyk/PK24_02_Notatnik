@@ -16,7 +16,7 @@ namespace PK_02_Notatnik
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new FormEditor());
         }
     }
 }

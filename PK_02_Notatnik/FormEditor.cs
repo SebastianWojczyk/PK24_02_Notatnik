@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace PK_02_Notatnik
 {
-    public partial class Form1 : Form
+    public partial class FormEditor : Form
     {
         private const String MyFilter = "Plik tekstowy|*.txt|Skrypty|*.bat|Wszystkie pliki|*.*";
 
@@ -31,7 +31,7 @@ namespace PK_02_Notatnik
         }
 
         public bool TextEdited
-        { 
+        {
             get
             {
                 return textEdited;
@@ -51,26 +51,44 @@ namespace PK_02_Notatnik
             }
             else
             {
-                this.Text = MyFileName;
+                this.Text = Path.GetFileName(MyFileName);
             }
-            if(TextEdited)
+            if (TextEdited)
             {
                 this.Text += " *";
             }
         }
-        public Form1()
+        public FormEditor()
         {
             InitializeComponent();
             SetInfo();
         }
         private void nowyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (TextEdited)
+            {
+                DialogResult result = MessageBox.Show("Czy chcesz zapisać zmiany?", "Plik został zmieniony!", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes)
+                {
+                    zapiszToolStripMenuItem_Click(sender, e);
+                }
+                return;
+            }
             richTextBoxEditor.Text = "";
             MyFileName = "";
             TextEdited = false;
         }
         private void owórzToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (TextEdited)
+            {
+                DialogResult result = MessageBox.Show("Czy chcesz zapisać zmiany?", "Plik został zmieniony!", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes)
+                {
+                    zapiszToolStripMenuItem_Click(sender, e);
+                }
+                return;
+            }
             OpenFileDialog OFDialog = new OpenFileDialog();
             OFDialog.Filter = MyFilter;
             if (OFDialog.ShowDialog() == DialogResult.OK)
@@ -82,7 +100,7 @@ namespace PK_02_Notatnik
         }
         private void zapiszToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(MyFileName == "")
+            if (MyFileName == "")
             {
                 zapiszJakoToolStripMenuItem_Click(sender, e);
             }
@@ -90,7 +108,7 @@ namespace PK_02_Notatnik
             {
                 File.WriteAllText(MyFileName, richTextBoxEditor.Text);
                 TextEdited = false;
-            } 
+            }
         }
         private void zapiszJakoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -107,6 +125,41 @@ namespace PK_02_Notatnik
         private void richTextBoxEditor_TextChanged(object sender, EventArgs e)
         {
             TextEdited = true;
+        }
+
+        private void zakończToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (TextEdited)
+            {
+                DialogResult result = MessageBox.Show("Czy chcesz zapisać zmiany?", "Plik został zmieniony!", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes)
+                {
+                    zapiszToolStripMenuItem_Click(sender, e);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void konfiguracjaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormConfig FC = new FormConfig();
+            FC.EditorBackColor = richTextBoxEditor.BackColor;
+            FC.EditorForeColor = richTextBoxEditor.ForeColor;
+            FC.EditorFont = richTextBoxEditor.Font;
+            if (FC.ShowDialog() == DialogResult.OK)
+            {
+                richTextBoxEditor.BackColor = FC.EditorBackColor;
+                richTextBoxEditor.ForeColor = FC.EditorForeColor;
+                richTextBoxEditor.Font = FC.EditorFont;
+            }
         }
     }
 }
