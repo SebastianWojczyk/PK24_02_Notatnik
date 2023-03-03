@@ -15,16 +15,59 @@ namespace PK_02_Notatnik
     {
         private const String MyFilter = "Plik tekstowy|*.txt|Skrypty|*.bat|Wszystkie pliki|*.*";
 
-        private String MyFileName = "";
+        private String myFileName = "";
+        private Boolean textEdited = false;
+        public String MyFileName
+        {
+            get
+            {
+                return myFileName;
+            }
+            set
+            {
+                myFileName = value;
+                SetInfo();
+            }
+        }
 
+        public bool TextEdited
+        { 
+            get
+            {
+                return textEdited;
+            }
+            set
+            {
+                textEdited = value;
+                SetInfo();
+            }
+        }
+
+        void SetInfo()
+        {
+            if (MyFileName == "")
+            {
+                this.Text = "Nowy plik";
+            }
+            else
+            {
+                this.Text = MyFileName;
+            }
+            if(TextEdited)
+            {
+                this.Text += " *";
+            }
+        }
         public Form1()
         {
             InitializeComponent();
+            SetInfo();
         }
         private void nowyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBoxEditor.Text = "";
             MyFileName = "";
+            TextEdited = false;
         }
         private void owórzToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -34,6 +77,7 @@ namespace PK_02_Notatnik
             {
                 richTextBoxEditor.Text = File.ReadAllText(OFDialog.FileName);
                 MyFileName = OFDialog.FileName;
+                TextEdited = false;
             }
         }
         private void zapiszToolStripMenuItem_Click(object sender, EventArgs e)
@@ -45,7 +89,8 @@ namespace PK_02_Notatnik
             else
             {
                 File.WriteAllText(MyFileName, richTextBoxEditor.Text);
-            }
+                TextEdited = false;
+            } 
         }
         private void zapiszJakoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -55,7 +100,13 @@ namespace PK_02_Notatnik
             {
                 File.WriteAllText(SFDialog.FileName, richTextBoxEditor.Text);
                 MyFileName = SFDialog.FileName;
+                TextEdited = false;
             }
+        }
+
+        private void richTextBoxEditor_TextChanged(object sender, EventArgs e)
+        {
+            TextEdited = true;
         }
     }
 }
